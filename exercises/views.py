@@ -1,7 +1,7 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import MuscleGroup, ExerciseType, Exercise
-from .serializers import MuscleGroupSerializer, ExerciseTypeSerializer, ExerciseSerializer
+from .models import MuscleGroup, ExerciseType, Exercise, Routine
+from .serializers import MuscleGroupSerializer, ExerciseTypeSerializer, ExerciseSerializer, RoutineSerializer
 
 # Create your views here.
 class MuscleGroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -18,3 +18,12 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
   permission_classes = []
   filter_backends = [DjangoFilterBackend]
   filterset_fields = ['muscle_group', 'exercise_type']
+
+class RoutineViewSet(viewsets.ModelViewSet):
+  serializer_class = RoutineSerializer
+
+  def get_queryset(self):
+    return Routine.objects.filter(user=self.request.user).order_by('-created_at')
+  
+  def perform_create(self, serializer):
+    serializer.save(user=self.request.user)
