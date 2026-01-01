@@ -7,7 +7,12 @@ class Profile(models.Model):
   birth_date = models.DateField(null=True, blank=True)
   height = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
   weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-  avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+  avatar = models.URLField(
+    max_length=500,
+    null=True,
+    blank=True,
+    help_text="URL de la imagen del avatar"
+  )
   bio = models.TextField(max_length=500, null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
