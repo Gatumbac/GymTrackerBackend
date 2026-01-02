@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
   user = models.OneToOneField(User, on_delete=models.RESTRICT, related_name="profile")
   birth_date = models.DateField(null=True, blank=True)
-  height = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+  height = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
   weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
   avatar = models.URLField(
     max_length=500,
@@ -22,4 +22,4 @@ class Profile(models.Model):
   
   @property
   def is_complete(self):
-      return all([self.birth_date, self.height, self.weight])
+    return all([self.birth_date, self.height, self.weight])

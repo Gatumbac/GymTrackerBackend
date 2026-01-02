@@ -30,6 +30,11 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = []
 
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+
 
 # Application definition
 
@@ -132,8 +137,8 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # Token dura 1 hora
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # Refresh dura 1 día
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24), # Token dura 1 dia
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # Refresh dura 7 dias
 }
 
 
@@ -156,3 +161,4 @@ STATIC_URL = 'static/'
 
 #CORS
 CORS_ALLOW_ALL_ORIGINS = True   
+CORS_ALLOW_CREDENTIALS = True
