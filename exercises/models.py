@@ -37,6 +37,9 @@ class Exercise(models.Model):
     help_text="URL de la imagen del ejercicio"
   )
 
+  class Meta:
+    ordering = ['muscle_group', 'exercise_type', 'name']
+
   def __str__(self):
     return self.name
     
