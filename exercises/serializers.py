@@ -1,5 +1,12 @@
 from rest_framework import serializers
-from .models import MuscleGroup, ExerciseType, Exercise, Routine, RoutineItem
+from .models import (MuscleGroup, 
+                     ExerciseType, 
+                     Exercise, 
+                     Routine, 
+                     RoutineItem, 
+                     RoutineSchedule, 
+                     WorkoutSet, 
+                     WorkoutSession)
 
 class MuscleGroupSerializer(serializers.ModelSerializer):
   class Meta:
@@ -39,7 +46,7 @@ class RoutineItemSerializer(serializers.ModelSerializer):
 
 class RoutineSerializer(serializers.ModelSerializer):
   items = RoutineItemSerializer(many=True)
-  
+
   class Meta:
     model = Routine
     fields = ['id', 'name', 'description', 'created_at', 'items']
@@ -66,5 +73,46 @@ class RoutineSerializer(serializers.ModelSerializer):
         RoutineItem.objects.create(routine=instance, **item_data)
     
     return instance
+  
+class RoutineScheduleSerializer(serializers.ModelSerializer):
+  routine_name = serializers.ReadOnlyField(source='routine.name')
+  day_name = serializers.CharField(source='get_day_of_week_display', read_only=True)
 
-        
+  class Meta:
+    model = RoutineSchedule
+    fields = ['id', 'user', 'routine', 'routine_name', 'day_of_week', 'day_name']
+    read_only_fields = ['id', 'user']
+
+  # validar que la rutina pertenezca al usuario
+  def validate_routine(self, value):
+    user = self.context['request'].user
+    if (value.user) != user:
+      raise serializers.ValidationError("Rutina no pertenece al usuario")
+    return value
+
+class WorkoutSetSerializer(serializers.ModelSerializer):
+  exercise_name = serializers.ReadOnlyField(source='exercise.name')
+  exercise_image = serializers.ReadOnlyField(source='exercise.image_url')
+
+  class Meta:
+    model = WorkoutSet
+    fields = ['id', 'session', 'exercise', 'exercise_name', 'exercise_image', 'set_number', 'weight', 'reps', 'completed_at']
+    read_only_fields = ['id', 'completed_at']
+
+  def validate_session(self, value):
+    user = self.context['request'].user
+    if value.user != user:
+      raise serializers.ValidationError("Sesion no pertenece a usuario")
+    if not value.is_active:
+      raise serializers.ValidationError("Sesion finalizada")
+    return value
+
+class WorkoutSessionSerializer(serializers.ModelSerializer):
+  sets = WorkoutSetSerializer(many=True, read_only=True)
+  routine_name = serializers.ReadOnlyField(source='routine.name')
+  duration = serializers.ReadOnlyField(source='duration_minutes')
+
+  class Meta:
+    model = WorkoutSession
+    fields = ['id', 'routine', 'routine_name', 'start_time', 'end_time', 'is_active', 'duration', 'sets']
+    read_only_fields = ['id', 'start_time', 'end_time', 'is_active', 'duration']

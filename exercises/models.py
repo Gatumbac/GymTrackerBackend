@@ -71,11 +71,11 @@ class WorkoutSession(models.Model):
   end_time = models.DateTimeField(null=True, blank=True)
 
   @property
-  def is_active(self):
+  def is_active(self) -> bool:
     return self.end_time is None
   
   @property
-  def duration_minutes(self):
+  def duration_minutes(self) -> int | None:
     if self.end_time:
       delta = self.end_time - self.start_time
       return int(delta.total_seconds() / 60)
