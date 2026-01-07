@@ -19,15 +19,21 @@ from .serializers import (MuscleGroupSerializer,
                           RoutineScheduleSerializer, 
                           WorkoutSessionSerializer, 
                           WorkoutSetSerializer)
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
 
 # Create your views here.
 class MuscleGroupViewSet(viewsets.ReadOnlyModelViewSet):
   queryset = MuscleGroup.objects.all()
   serializer_class = MuscleGroupSerializer
+  permission_classes = [AllowAny]
+
 
 class ExerciseTypeViewSet(viewsets.ReadOnlyModelViewSet):
   queryset = ExerciseType.objects.all()
   serializer_class = ExerciseTypeSerializer
+  permission_classes = [AllowAny]
+
 
 class ExerciseViewSet(viewsets.ModelViewSet):
   # optimizacion de query. Uso de select related para evitar N+1 queries y reducirla a una sola
@@ -36,6 +42,8 @@ class ExerciseViewSet(viewsets.ModelViewSet):
   permission_classes = []
   filter_backends = [DjangoFilterBackend]
   filterset_fields = ['muscle_group', 'exercise_type']
+  permission_classes = [AllowAny]
+
 
   def get_queryset(self):
     return Exercise.objects.select_related('muscle_group', 'exercise_type').filter(
