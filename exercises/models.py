@@ -30,6 +30,7 @@ class Exercise(models.Model):
   muscle_group = models.ForeignKey(MuscleGroup, on_delete=models.PROTECT)
   exercise_type = models.ForeignKey(ExerciseType, on_delete=models.PROTECT)
   created_at = models.DateTimeField(auto_now_add=True)
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='exercises', null=True, blank=True)
   image_url = models.URLField(
     max_length=500,
     null=True,

@@ -24,8 +24,9 @@ class ExerciseSerializer(serializers.ModelSerializer):
     
   class Meta:
     model = Exercise
-    fields = ['id', 'name', 'description', 'image_url', 'muscle_group', 'exercise_type', 'muscle_group_name', 'exercise_type_name']
-  
+    fields = ['id', 'name', 'description', 'image_url', 'muscle_group', 'exercise_type', 'muscle_group_name', 'exercise_type_name', 'user']
+    read_only_fields = ['id', 'user']
+
 class RoutineItemSerializer(serializers.ModelSerializer):
   exercise_name = serializers.ReadOnlyField(source='exercise.name')
   exercise_image = serializers.ReadOnlyField(source='exercise.image_url')

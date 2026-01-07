@@ -1,3 +1,4 @@
+from django.db import models
 from django.utils import timezone
 from rest_framework import viewsets, status, mixins
 from django_filters.rest_framework import DjangoFilterBackend
@@ -28,13 +29,21 @@ class ExerciseTypeViewSet(viewsets.ReadOnlyModelViewSet):
   queryset = ExerciseType.objects.all()
   serializer_class = ExerciseTypeSerializer
 
-class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
+class ExerciseViewSet(viewsets.ModelViewSet):
   # optimizacion de query. Uso de select related para evitar N+1 queries y reducirla a una sola
   queryset = Exercise.objects.select_related('muscle_group', 'exercise_type').all()
   serializer_class = ExerciseSerializer
   permission_classes = []
   filter_backends = [DjangoFilterBackend]
   filterset_fields = ['muscle_group', 'exercise_type']
+
+  def get_queryset(self):
+    return Exercise.objects.select_related('muscle_group', 'exercise_type').filter(
+      models.Q(user=self.request.user) | models.Q(user__isnull=True)
+    )
+
+  def perform_create(self, serializer):
+    serializer.save(user=self.request.user)
 
 class RoutineViewSet(viewsets.ModelViewSet):
   serializer_class = RoutineSerializer
